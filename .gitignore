@@ -1,0 +1,3 @@
+restart-containers.sh
+.env
+.vscode/
