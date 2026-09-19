@@ -1,3 +1,4 @@
 restart-containers.sh
 .env
 .vscode/
+api/.venv/
