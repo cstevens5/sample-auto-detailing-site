@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API checks
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          python-version: "3.10.5"
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+
+      - name: Verify lock file
+        run: uv lock --check
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Check formatting
+        run: uv run ruff format --check .
+
+      - name: Type check
+        run: uv run ty check
+
+      - name: Run tests
+        run: uv run python -m pytest --cov=app --cov-report=term-missing
+
+  migrations:
+    name: Validate database migrations
+    runs-on: ubuntu-latest
+
+    env:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Start PostgreSQL
+        run: docker compose up -d --wait postgres
+
+      - name: Apply migrations
+        run: docker compose run --rm flyway migrate
+
+      - name: Validate migrations
+        run: docker compose run --rm flyway validate
+
+      - name: Shut down containers
+        if: always()
+        run: docker compose down -v

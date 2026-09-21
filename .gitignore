@@ -2,3 +2,9 @@ restart-containers.sh
 .env
 .vscode/
 api/.venv/
+api/.ruff_cache/
+api/.pytest_cache/
+api/.coverage
+api/htmlcov/
+__pycache__/
+*.py[cod]

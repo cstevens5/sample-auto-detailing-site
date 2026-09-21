@@ -6,3 +6,15 @@ dependencies = [
     "fastapi[standard]>=0.141.1",
     "sqlalchemy>=2.0.54",
 ]
+
+[tool.fastapi]
+entrypoint = "app.main:app"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.8",
+    "ty>=0.0.82",
+]
